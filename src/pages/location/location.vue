@@ -11,7 +11,7 @@
             <router-link class="guess_city" :to="'/city'">
                 <span>郑州</span>
                 <svg class="arrow_right">
-                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow_right"></use>
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
                 </svg>
             </router-link>
         </nav>

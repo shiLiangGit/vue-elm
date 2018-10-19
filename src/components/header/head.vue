@@ -8,7 +8,7 @@
             </svg>
         </section>
         <router-link :to="userInfo ? '/profile' : '/login'" class="head_login" v-if="signinUp">
-            <svg class="user_avatar">
+            <svg class="user_avatar" v-if="userInfo">
                 <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#user"></use>
             </svg>
             <span class="login_span">登录|注册</span>

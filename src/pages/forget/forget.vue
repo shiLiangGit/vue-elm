@@ -38,6 +38,7 @@
         },
         data(){
             return {
+                phone:null,
                 newPassWord: null,
                 oldPassWord: null,
                 confirmPassWord: null,
