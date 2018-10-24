@@ -1,9 +1,9 @@
 import axios from 'axios';
 import qs from 'qs';
-import Config  from '../config';
+import { baseUrl }  from '../config/env';
 
 axios.defaults.timeout = 5000;              //超市默认值
-axios.defaults.baseURL = Config.baseUrl;    //默认baseUrl
+axios.defaults.baseURL = baseUrl;    //默认baseUrl
 axios.defaults.responseType = 'json';       //默认数据相应类型
 axios.defaults.headers.common['Content-type'] = 'application/json;charset=UTF-8';
 axios.defaults.withCredentials = true;      //表示跨域请求时是否需要使用凭证

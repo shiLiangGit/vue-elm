@@ -64,6 +64,7 @@
 
 <script>
     import Head from '../../components/header/head';
+    import { get, post } from '../../providers/api';
     export default {
         name: "location",
         components:{
@@ -71,8 +72,13 @@
         },
         methods:{
             reload(){
-                window.location.reload();
-            }
+                get('/v1/cities', {
+                    type: 'group'
+                }).then((res)=>{
+                    console.log(res);
+                });
+            },
+
         }
     }
 </script>
