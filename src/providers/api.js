@@ -68,6 +68,7 @@ export function post (url, data = {}) {
  * @returns {Promise}
  */
 export function get (url, data = {}) {
+    console.log(axios.defaults.baseURL)
     return new Promise((resolve, reject) => {
         axios.get(url, {params: data})
             .then(response => {
