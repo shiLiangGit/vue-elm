@@ -26,7 +26,12 @@
 
 <script>
     export default {
-        props:['signinUp','headTitle','goBack']
+        props:['signinUp','headTitle','goBack'],
+        data(){
+            return {
+                userInfo: null
+            }
+        },
     }
 </script>
 

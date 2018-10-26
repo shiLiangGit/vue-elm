@@ -64,7 +64,7 @@
 
 <script>
     import Head from '../../components/header/head';
-    import { get, post } from '../../providers/api';
+    import { groupList } from '../../providers/getApiData';
     export default {
         name: "location",
         components:{
@@ -72,9 +72,10 @@
         },
         methods:{
             reload(){
-                get('/v1/cities', {
-                    type: 'group'
-                }).then((res)=>{
+                let params = {
+                    type : 'group'
+                };
+                groupList(params).then((res)=>{
                     console.log(res);
                 });
             },
