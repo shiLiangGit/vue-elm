@@ -30,7 +30,7 @@ export default new Router({
             component:forget
         },
         {
-            path:'/city',
+            path:'/city/:cityId',
             name:'city',
             component:city
         }

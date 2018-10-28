@@ -3,12 +3,12 @@
         <Head :headTitle="cityname" go-back="true">
             <router-link to="/" slot="changecity" class="change_city">切换城市</router-link>
         </Head>
-        <form v-on:submit.prevent class="city_form">
+        <form @submit.prevent="postpois()" class="city_form">
             <div>
                 <input type="search" name="city" placeholder="输入学校、商务楼、地址" class="city_input input_style" required v-model="inputValue">
             </div>
             <div>
-                <input type="submit" name="submit" class="city_submit input_style" @click="postpois" value="'提交'">
+                <input type="submit" name="submit" class="city_submit input_style"  value="提交">
             </div>
         </form>
         <header v-if="historytitle" class="pois_search_history">搜索历史</header>
@@ -19,12 +19,15 @@
             </li>
         </ul>
         <footer v-if="historytitle&&placelist.length" class="clear_all_history" @click="clearAll">清空所有</footer>
-        <div class="search_none_place" v-if="placeNone">很抱歉，我搜索结果</div>
+        <div class="search_none_place" v-if="placeNone">很抱歉，无搜索结果</div>
     </section>
 </template>
 
 <script>
     import Head from '../../components/header/head';
+    import * as _ from 'loadsh';
+    import { setStore, getStore, removeStore } from '../../config/mUtils';
+    import { sendPosition, chooseCity } from '../../providers/getApiData';
     export default {
         components:{
             Head
@@ -32,25 +35,66 @@
         data(){
             return {
                 inputValue:null,
-                placelist:[{
-                    "title":"南阳路111号院",
-                    "address":"河南省郑州市南阳路111号",
-                    "geohash":"121.11,565.7877"
-                }],
-                historytitle:true,
-                cityname:"郑州",
-                placeNone:false
+                cityId: null,
+                placelist:[],
+                cityname:"",
+                placeHistory: [],
+                historytitle:true, // 默认显示搜索历史头部，点击搜索后隐藏
+                placeNone:false // 搜索无结果，显示提示信息
             }
         },
+        mounted(){
+          this.cityId = this.$route.params.cityId;
+            chooseCity(this.cityId).then(res => {
+                this.cityname = res.name;
+            });
+          this.initData();
+        },
         methods:{
+            initData(){
+                if(getStore("placeHistory")){
+                    this.placelist = JSON.parse(getStore("placeHistory"));
+                }else{
+                    this.placelist = [];
+                }
+            },
+            //发送搜索信息inputVaule
             postpois(){
-
+                if(this.inputValue){
+                    let params = {
+                        city_id: this.cityId,
+                        keyword: this.inputValue,
+                        type: "search"
+                    };
+                    sendPosition(params).then(res => {
+                        this.placelist = _.isArray(res) ? res : [];
+                        this.historytitle = false;
+                        this.placeNone = !res.length;
+                    });
+                }
             },
             clearAll(){
-
+                removeStore('placeHistory');
+                this.initData();
             },
             nextpage(index,geohash){
-                this.$router.push({path:'/home',query:{geohash}});
+                let choosePlace = this.placelist[index];
+                if(getStore("placeHistory")){
+                    let checkRepeat = false;
+                    this.placeHistory = JSON.parse(getStore("placeHistory"));
+                    this.placeHistory.forEach(item => {
+                        if(item.geohash == geohash){
+                            checkRepeat = true;
+                        }
+                    });
+                    if(!checkRepeat){
+                        this.placeHistory.push(choosePlace);
+                    }
+                }else{
+                    this.placeHistory.push(choosePlace);
+                }
+                setStore('placeHistory',this.placeHistory);
+                this.$router.push({path:'/msite',query:{geohash}});
             }
         }
     }

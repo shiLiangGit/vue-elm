@@ -1,15 +1,15 @@
 <template>
     <div>
         <Head signin-up='home'>
-            <span slot='logo' class="head_logo"  @click="reload">ele.me</span>
+            <span slot='logo' class="head_logo" @click="reload">ele.me</span>
         </Head>
         <nav class="city_nav">
             <div class="city_tip">
                 <span>当前定位城市</span>
                 <span>定位不准时，请在城市列表中选择</span>
             </div>
-            <router-link class="guess_city" :to="'/city'">
-                <span>郑州</span>
+            <router-link class="guess_city" :to="'/city/' + guessCityId">
+                <span>{{guessCity}}</span>
                 <svg class="arrow_right">
                     <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#arrow-right"></use>
                 </svg>
@@ -18,42 +18,18 @@
         <section id="hot_city_container">
             <h4 class="city_title">热门城市</h4>
             <ul class="city_list citylistul clear">
-                <router-link tag="li" :to="'/city'">
-                    郑州
-                </router-link>
-                <router-link tag="li" :to="'/city'">
-                    郑州
-                </router-link>
-                <router-link tag="li" :to="'/city'">
-                    郑州
+                <router-link tag="li" v-for="item in hotCities" :key="item.id" :to="'/city/' + item.id">
+                    {{item.name}}
                 </router-link>
             </ul>
         </section>
         <section class="group_city_container">
             <ul class="letter_classify">
-                <li class="letter_classify_li">
-                    <h4 class="city_title">A <span>（按字母排序）</span></h4>
+                <li class="letter_classify_li" v-for="(value,key,index) in sortgroupcity" :key="key">
+                    <h4 class="city_title">{{key}} <span v-if="index == 0">（按字母排序）</span></h4>
                     <ul class="groupcity_name_container citylistul clear">
-                        <router-link tag="li" :to="'/city'" class="ellipsis">
-                            安阳
-                        </router-link>
-                        <router-link tag="li" :to="'/city'" class="ellipsis">
-                            安阳
-                        </router-link>
-                        <router-link tag="li" :to="'/city'" class="ellipsis">
-                            安阳
-                        </router-link>
-                        <router-link tag="li" :to="'/city'" class="ellipsis">
-                            安阳
-                        </router-link>
-                        <router-link tag="li" :to="'/city'" class="ellipsis">
-                            安阳
-                        </router-link>
-                        <router-link tag="li" :to="'/city'" class="ellipsis">
-                            安阳
-                        </router-link>
-                        <router-link tag="li" :to="'/city'" class="ellipsis">
-                            安阳
+                        <router-link tag="li" v-for="item in value" :key="item.id" :to="'/city/' + item.id" class="ellipsis">
+                            {{item.name}}
                         </router-link>
                     </ul>
                 </li>
@@ -64,22 +40,72 @@
 
 <script>
     import Head from '../../components/header/head';
-    import { groupList } from '../../providers/getApiData';
+    import * as _ from 'loadsh';
+    import {groupList, hotCities, currentCity} from '../../providers/getApiData';
+
     export default {
         name: "location",
-        components:{
+        components: {
             Head
         },
-        methods:{
-            reload(){
+        data(){
+            return {
+                guessCity: "",  // 当前城市
+                guessCityId: "",  // 当前城市Id
+                hotCities: [],
+                cityLists: {},
+            }
+        },
+        mounted() {
+            this.getCityLists();
+            this.getHotCities();
+            this.getCurrentCity();
+        },
+        methods: {
+            // 当前城市
+            getCurrentCity() {
                 let params = {
-                    type : 'group'
+                    type: 'guess',
                 };
-                groupList(params).then((res)=>{
-                    console.log(res);
+                currentCity(params).then(res => {
+                    this.guessCity = res.name;
+                    this.guessCityId = res.id;
                 });
             },
-
+            // 热门城市列表
+            getHotCities() {
+                let params = {
+                    type: 'hot',
+                };
+                hotCities(params).then(res => {
+                    this.hotCities = _.isArray(res) ? res : [];
+                    console.log(this.hotCities)
+                });
+            },
+            // 获取所有城市列表
+            getCityLists() {
+                let params = {
+                    type: 'group'
+                };
+                groupList(params).then((res) => {
+                    this.cityLists = _.isObject(res) ? res : {};
+                });
+            },
+            reload() {
+                window.location.reload();
+            }
+        },
+        computed: {
+            //将获取的数据按照A-Z字母开头排序
+            sortgroupcity(){
+                let sortobj = {};
+                for (let i = 65; i <= 90; i++) {
+                    if (this.cityLists[String.fromCharCode(i)]) {
+                        sortobj[String.fromCharCode(i)] = this.cityLists[String.fromCharCode(i)];
+                    }
+                }
+                return sortobj;
+            }
         }
     }
 </script>
@@ -87,32 +113,34 @@
 <style lang="scss" scoped>
     @import '../../style/common';
     @import '../../style/mixin';
-    .head_logo{
+
+    .head_logo {
         left: 0.4rem;
         font-weight: 400;
         @include sc(0.7rem, #fff);
         @include wh(2.3rem, 0.7rem);
         @include ct;
     }
-    .city_nav{
+
+    .city_nav {
         padding-top: 2.35rem;
         border-top: 1px solid $bc;
         background-color: #fff;
         margin-bottom: 0.4rem;
-        .city_tip{
+        .city_tip {
             @include fj;
             line-height: 1.45rem;
             padding: 0 0.45rem;
-            span:nth-of-type(1){
+            span:nth-of-type(1) {
                 @include sc(0.55rem, #666);
             }
-            span:nth-of-type(2){
+            span:nth-of-type(2) {
                 font-weight: 900;
                 @include sc(0.475rem, #9f9f9f);
             }
 
         }
-        .guess_city{
+        .guess_city {
             @include fj;
             align-items: center;
             height: 1.8rem;
@@ -120,21 +148,23 @@
             border-top: 1px solid $bc;
             border-bottom: 2px solid $bc;
             @include font(0.75rem, 1.8rem);
-            span:nth-of-type(1){
+            span:nth-of-type(1) {
                 color: $blue;
             }
-            .arrow_right{
+            .arrow_right {
                 @include wh(.6rem, .6rem);
                 fill: #999;
             }
         }
     }
-    #hot_city_container{
+
+    #hot_city_container {
         background-color: #fff;
         margin-bottom: 0.4rem;
     }
-    .citylistul{
-        li{
+
+    .citylistul {
+        li {
             float: left;
             text-align: center;
             color: $blue;
@@ -143,28 +173,29 @@
             @include wh(25%, 1.75rem);
             @include font(0.6rem, 1.75rem);
         }
-        li:nth-of-type(4n){
+        li:nth-of-type(4n) {
             border-right: none;
         }
     }
-    .city_title{
+
+    .city_title {
         color: #666;
         font-weight: 400;
         text-indent: 0.45rem;
         border-top: 2px solid $bc;
         border-bottom: 1px solid $bc;
         @include font(0.55rem, 1.45rem, "Helvetica Neue");
-        span{
+        span {
             @include sc(0.475rem, #999);
         }
     }
 
-    .letter_classify_li{
+    .letter_classify_li {
         margin-bottom: 0.4rem;
         background-color: #fff;
         border-bottom: 1px solid $bc;
-        .groupcity_name_container{
-            li{
+        .groupcity_name_container {
+            li {
                 color: #666;
             }
         }

@@ -42,12 +42,12 @@
 
 <script>
     import {mapMutations} from 'vuex';
-    import Head from 'src/components/header/head';
-    import footGuide from 'src/components/footer/footGuide';
+    import Head from '../../components/header/head.vue';
+    import footGuide from '../../components/footer/footGuide';
     // import shopList from 'src/components/common/shoplist';
     // import {msiteAddress, msiteFoodTypes, cityGuess} from 'src/service/getData';
-    import 'src/plugins/swiper.min.js';
-    import 'src/style/swiper.min.css';
+    import '../../plugins/swiper.min.js';
+    import '../../style/swiper.min.css';
     export default {
         name: "home",
         components:{
