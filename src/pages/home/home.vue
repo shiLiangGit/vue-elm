@@ -46,8 +46,7 @@
     import footGuide from '../../components/footer/footGuide';
     // import shopList from 'src/components/common/shoplist';
     // import {msiteAddress, msiteFoodTypes, cityGuess} from 'src/service/getData';
-    import '../../plugins/swiper.min.js';
-    import '../../style/swiper.min.css';
+    import Swiper from 'swiper';
     export default {
         name: "home",
         components:{

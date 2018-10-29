@@ -5,7 +5,7 @@
         </div>
         <form action="" class="loginForm" v-if="loginWay">
             <section class="input_container phone_number">
-                <input type="text" placeholder="账号密码随便输入" name="phone" maxlength="11">
+                <input type="text" placeholder="账号密码随便输入" name="phone" v-model="phoneNumber" maxlength="11">
                 <button>获取验证码</button>
                 <button>已发送10s</button>
             </section>
@@ -15,10 +15,10 @@
         </form>
         <form class="loginForm" v-else>
             <section class="input_container">
-                <input type="text" placeholder="账号">
+                <input type="text" placeholder="账号" v-model="userAccount">
             </section>
             <section class="input_container">
-                <input type="password" placeholder="密码">
+                <input type="password" placeholder="密码" v-model="userPassword">
                 <div class="button_switch">
                     <div class="circle_button">
                         <span>abc</span>
@@ -27,9 +27,9 @@
                 </div>
             </section>
             <section class="input_container captcha_code_container">
-                <input type="text" placeholder="验证码" maxlength="4">
+                <input type="text" placeholder="验证码" maxlength="4" v-model="phoneCode">
                 <div class="img_change_img">
-                    <img src="" alt="">
+                    <img :src="captchaCodeImg" alt="">
                     <div class="change_img">
                         <p>看不清</p>
                         <p>换一张</p>
@@ -54,21 +54,73 @@
 <script>
     import Head from '../../components/header/head';
     import AlertTip from '../../components/common/alertTip';
+    import { getcaptchas, accountLogin } from '../../providers/getApiData';
     export default {
         data() {
             return {
+                userAccount:null,
+                userPassword:null,
+                captchaCodeImg:null,
+                phoneNumber:null,
+                phoneCode:null,
                 loginWay: false,
+                userInfo:null,
                 showAlert: false
             }
+        },
+        created(){
+          this.getCaptchaCode();
         },
         components: {
             Head,
             AlertTip
         },
+        computed:{
+            //判断手机号码
+            rightPhoneNumber: function (){
+                return /^1\d{10}$/gi.test(this.phoneNumber);
+            }
+        },
         methods:{
-            mobileLogin(){
-                this.showAlert = true;
-                this.alertText = "请输入手机号/邮箱";
+            async getCaptchaCode(){
+              let res = await  getcaptchas();
+              this.captchaCodeImg = res.code;
+            },
+            async mobileLogin(){
+                if(this.loginWay){
+
+                }else{
+                    if(!this.userAccount){
+                        this.showAlert = true;
+                        this.alertText = "请输入手机号/邮箱/用户名";
+                        return ;
+                    }else if(!this.userPassword){
+                        this.showAlert = true;
+                        this.alertText = "请输入密码";
+                        return ;
+                    }else if(!this.phoneCode){
+                        this.showAlert = true;
+                        this.alertText = "请输入验证码";
+                        return ;
+                    }
+                    // 用户名登录
+                    let params = {
+                        username:this.userAccount,
+                        password:this.userPassword,
+                        captcha_code:this.phoneCode
+                    };
+                    this.userInfo = await accountLogin(params);
+                    //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
+                    if (!this.userInfo.user_id) {
+                        this.showAlert = true;
+                        this.alertText = this.userInfo.message;
+                        if (!this.loginWay) this.getCaptchaCode();
+                    }else{
+                        // this.RECORD_USERINFO(this.userInfo);
+                        this.$router.go(-1);
+
+                    }
+                }
             },
             closeTip(){
                 this.showAlert = false;
