@@ -54,6 +54,7 @@
 <script>
     import Head from '../../components/header/head';
     import AlertTip from '../../components/common/alertTip';
+    import { mapMutations } from 'vuex';
     import { getcaptchas, accountLogin } from '../../providers/getApiData';
     export default {
         data() {
@@ -82,6 +83,10 @@
             }
         },
         methods:{
+            ...mapMutations([
+                "RECORD_USERINFO"
+            ]),
+            // 获取图片验证码
             async getCaptchaCode(){
               let res = await  getcaptchas();
               this.captchaCodeImg = res.code;
@@ -116,9 +121,8 @@
                         this.alertText = this.userInfo.message;
                         if (!this.loginWay) this.getCaptchaCode();
                     }else{
-                        // this.RECORD_USERINFO(this.userInfo);
+                        this.RECORD_USERINFO(this.userInfo);
                         this.$router.go(-1);
-
                     }
                 }
             },

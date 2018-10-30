@@ -62,6 +62,7 @@
             this.getCurrentCity();
         },
         methods: {
+
             // 当前城市
             getCurrentCity() {
                 let params = {

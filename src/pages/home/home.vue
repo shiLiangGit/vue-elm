@@ -45,7 +45,8 @@
     import Head from '../../components/header/head.vue';
     import footGuide from '../../components/footer/footGuide';
     // import shopList from 'src/components/common/shoplist';
-    // import {msiteAddress, msiteFoodTypes, cityGuess} from 'src/service/getData';
+    import { currentCity, msiteAddress } from 'src/providers/getApiData';
+    import { mapMutations } from 'vuex';
     import Swiper from 'swiper';
     export default {
         name: "home",
@@ -62,7 +63,26 @@
                 imgBaseUrl: 'https://fuss10.elemecdn.com' // 图片域名地址
             }
         },
+        async beforeMount(){
+          if(!this.$route.query.geohash){
+              let params = {
+                  type:"guess"
+              };
+              const address = await currentCity(params);
+              this.geohash = address.latitude + ',' + address.longitude;
+          }else{
+              this.geohash = this.$route.query.geohash;
+          }
+          // 保存geohash到localstorage
+            this.SAVE_GEOHASH = this.geohash;
+            let res = await msiteAddress(this.geohash);
+            this.msiteTitle = res.name;
+            
+        },
         methods:{
+            ...mapMutations([
+                "SAVE_GEOHASH"
+            ]),
             getCategoryId(){
 
             }

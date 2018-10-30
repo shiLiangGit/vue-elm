@@ -10,6 +10,8 @@ export const currentCity = (params) => get('/v1/cities',params);
 export const chooseCity = cityId => get('/v1/cities/' + cityId)
 // 获取发送的位置信息
 export const sendPosition = (params) => get('/v1/pois',params);
+// 获取经纬度详细信息
+export const msiteAddress = (geohash) => get('/v2/pois/' + geohash);
 //获取图片验证码
 export const getcaptchas = () => post('/v1/captchas', {});
 // 用户名登录
