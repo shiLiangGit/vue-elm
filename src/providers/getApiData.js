@@ -16,3 +16,5 @@ export const msiteAddress = (geohash) => get('/v2/pois/' + geohash);
 export const getcaptchas = () => post('/v1/captchas', {});
 // 用户名登录
 export const accountLogin = (params) => post('/v2/login',params);
+// 食品分类列表
+export const msiteFoodTypes = (params) => get('/v2/index_entry', params);

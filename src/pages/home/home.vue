@@ -17,9 +17,9 @@
                     <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
                         <router-link :to="{path:'/food', query: {geohash, title: foodItem.title, restaurant_category_id: getCategoryId()}}" v-for="foodItem in item" :key="foodItem.id" class="link_to_food">
                             <figure>
-                                <img src="" alt="">
+                                <img :src="imgBaseUrl + foodItem.image_url" alt="">
+                                <figcaption>{{foodItem.title}}</figcaption>
                             </figure>
-                            <figcaption></figcaption>
                         </router-link>
                     </div>
                 </div>
@@ -41,12 +41,11 @@
 </template>
 
 <script>
-    import {mapMutations} from 'vuex';
+    import { mapMutations } from 'vuex';
     import Head from '../../components/header/head.vue';
     import footGuide from '../../components/footer/footGuide';
     // import shopList from 'src/components/common/shoplist';
-    import { currentCity, msiteAddress } from 'src/providers/getApiData';
-    import { mapMutations } from 'vuex';
+    import { currentCity, msiteAddress, msiteFoodTypes } from '../../providers/getApiData';
     import Swiper from 'swiper';
     export default {
         name: "home",
@@ -74,14 +73,39 @@
               this.geohash = this.$route.query.geohash;
           }
           // 保存geohash到localstorage
-            this.SAVE_GEOHASH = this.geohash;
+            this.SAVE_GEOHASH(this.geohash);
             let res = await msiteAddress(this.geohash);
             this.msiteTitle = res.name;
-            
+            this.RECORD_ADDRESS(res);
+            this.hasGetData = true;
+            //初始化swiper
+            new Swiper('.swiper-container', {
+                pagination: '.swiper-pagination',
+                loop: true
+            });
+        },
+        async mounted(){
+            let params = {
+                geohash:this.geohash,
+                group_type:'1',
+                'flags[]':'F'
+            }
+            console.log(555)
+            const foodCategory = await msiteFoodTypes(params);
+            let resLength = foodCategory.length;
+            let resArr = [...foodCategory]; // 返回一个新的数组
+            let foodArr = [];
+            for (let i = 0, j = 0; i < resLength; i += 8, j++) {
+                foodArr[j] = resArr.splice(0, 8);
+            }
+            this.foodTypes = foodArr;
+
+            console.log(this.foodTypes)
         },
         methods:{
             ...mapMutations([
-                "SAVE_GEOHASH"
+                "SAVE_GEOHASH",
+                "RECORD_ADDRESS"
             ]),
             getCategoryId(){
 
