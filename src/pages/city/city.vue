@@ -94,7 +94,7 @@
                     this.placeHistory.push(choosePlace);
                 }
                 setStore('placeHistory',this.placeHistory);
-                this.$router.push({path:'/msite',query:{geohash}});
+                this.$router.push({path:'/home',query:{geohash}});
             }
         }
     }

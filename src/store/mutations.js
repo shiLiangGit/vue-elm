@@ -1,13 +1,13 @@
 import {
     RECORD_USERINFO,
-    RECORD_Address,
+    RECORD_ADDRESS,
     SAVE_GEOHASH
 } from './mutation-types';
 import { setStore, getStore } from "../config/mUtils";
 
 export default {
     // 记录定位经纬度
-    [RECORD_Address](state,{ latitude,longitude }){
+    [RECORD_ADDRESS](state,{ latitude,longitude }){
         state.latitude = latitude;
         state.longitude = longitude;
     },
