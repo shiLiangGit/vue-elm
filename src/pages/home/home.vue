@@ -15,7 +15,7 @@
             <div class="swiper-container" v-if="foodTypes.length">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide food_types_container" v-for="(item, index) in foodTypes" :key="index">
-                        <router-link :to="{path:'/food', query: {geohash, title: foodItem.title, restaurant_category_id: getCategoryId()}}" v-for="foodItem in item" :key="foodItem.id" class="link_to_food">
+                        <router-link :to="{path:'/food', query: {geohash, title: foodItem.title, restaurant_category_id: getCategoryId(foodItem.link)}}" v-for="foodItem in item" :key="foodItem.id" class="link_to_food">
                             <figure>
                                 <img :src="imgBaseUrl + foodItem.image_url" alt="">
                                 <figcaption>{{foodItem.title}}</figcaption>
@@ -106,8 +106,14 @@
                 "SAVE_GEOHASH",
                 "RECORD_ADDRESS"
             ]),
-            getCategoryId(){
-
+            // 解码url地址，求去restaurant_category_id值
+            getCategoryId(url){
+                let urlData = decodeURIComponent(url.split('=')[1].replace('&target_name',''));
+                if (/restaurant_category_id/gi.test(urlData)) {
+                    return JSON.parse(urlData).restaurant_category_id.id
+                }else{
+                    return ''
+                }
             }
         }
     }

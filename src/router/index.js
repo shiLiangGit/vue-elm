@@ -5,6 +5,8 @@ import login from '../pages/login/login';
 import forget from '../pages/forget/forget';
 import city from '../pages/city/city';
 import home from '../pages/home/home';
+import food from '../pages/food/food';
+import shop from '../pages/shop/shop';
 Vue.use(Router)
 
 export default new Router({
@@ -33,6 +35,16 @@ export default new Router({
             path:'/city/:cityId',
             name:'city',
             component:city
+        },
+        {
+            path:'/food',
+            name:'food',
+            component:food
+        },
+        {
+            path:'/shop',
+            name:'shop',
+            component:shop
         }
     ]
 })

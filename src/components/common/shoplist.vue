@@ -154,13 +154,34 @@ export default {
             }
             return zhunStatus
         },
+        //监听父级传来的数据发生变化时，触发此函数重新根据属性值获取数据
+        async listenPropChange(){
+            console.log("listen")
+            this.showLoading = true;
+            this.offset = 0;
+            let res = await shopList(this.latitude, this.longitude, this.offset, '', this.restaurantCategoryIds, this.sortByType, this.deliveryMode, this.supportIds);
+            this.hideLoading();
+            //考虑到本地模拟数据是引用类型，所以返回一个新的数组
+            this.shopListArr = [...res];
+        },
         //开发环境与编译环境loading隐藏方式不同
         hideLoading(){
             this.showLoading = false;
         },
 	},
 	watch: {
-
+		//监听父级传来的restaurantCategoryIds，当值发生变化的时候重新获取餐馆数据，作用于排序和筛选
+        restaurantCategoryIds: function (value){
+            this.listenPropChange();
+        },
+        //监听父级传来的排序方式
+        sortByType: function (value){
+            this.listenPropChange();
+        },
+        //监听父级的确认按钮是否被点击，并且返回一个自定义事件通知父级，已经接收到数据，此时父级才可以清除已选状态
+        confirmSelect: function (value){
+            this.listenPropChange();
+        }
 	}
 }
 </script>

@@ -40,3 +40,34 @@ export const shopList = (latitude, longitude, offset, restaurant_category_id = '
     };
     return get('/shopping/restaurants', data);
 };
+
+/**
+ * 获取food页面的 category 种类列表
+ */
+
+export const foodCategory = (latitude, longitude) => get('/shopping/v2/restaurant/category', {
+    latitude,
+    longitude
+});
+
+
+/**
+ * 获取food页面的配送方式
+ */
+
+export const foodDelivery = (latitude, longitude) => get('/shopping/v1/restaurants/delivery_modes', {
+    latitude,
+    longitude,
+    kw: ''
+});
+
+
+/**
+ * 获取food页面的商家属性活动列表
+ */
+
+export const foodActivity = (latitude, longitude) => get('/shopping/v1/restaurants/activity_attributes', {
+    latitude,
+    longitude,
+    kw: ''
+});
